@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>robots.txt AI Builder</title>
+<meta name="description" content="Build a robots.txt with named AI crawler allow/block rules. GPTBot, ClaudeBot, PerplexityBot, Google-Extended, and 13 others. Browser-only.">
+<meta property="og:title" content="robots.txt AI Builder">
+<meta property="og:description" content="Configure allow/disallow for every named AI crawler. 17 bots cataloged with current user-agent strings.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://0xelitesystem.github.io/robots-txt-ai-builder/og.png">
+<meta property="og:url" content="https://0xelitesystem.github.io/robots-txt-ai-builder/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="robots.txt AI Builder">
+<meta name="twitter:description" content="Configure allow/disallow for every named AI crawler.">
+<meta name="twitter:image" content="https://0xelitesystem.github.io/robots-txt-ai-builder/og.png">
+<style>
+:root {
+  --bg: #e8e6e0;
+  --bg-card: #f4f2ec;
+  --bg-panel: #ffffff;
+  --bg-deep: #d4d2cc;
+  --ink: #1a1d23;
+  --ink-soft: #5a6068;
+  --ink-faint: #8a8e94;
+  --rule: #a8a8a0;
+  --rule-soft: #c8c8c0;
+  --yellow: #d4a017;
+  --yellow-soft: #e8b833;
+  --green: #3d7a3d;
+  --red: #b03838;
+  --steel: #4a4e57;
+  --mono: 'JetBrains Mono', 'IBM Plex Mono', 'Courier New', monospace;
+  --sans: 'Inter', -apple-system, sans-serif;
+  --display: 'Space Grotesk', 'Inter', sans-serif;
+}
+[data-theme="dark"] {
+  --bg: #16181c;
+  --bg-card: #22252a;
+  --bg-panel: #2a2d33;
+  --bg-deep: #1a1d22;
+  --ink: #e0e2e4;
+  --ink-soft: #a0a4aa;
+  --ink-faint: #6a6e74;
+  --rule: #3a3d44;
+  --rule-soft: #2e3138;
+  --yellow: #e8b833;
+  --yellow-soft: #f0c850;
+  --green: #6aa86a;
+  --red: #d97070;
+  --steel: #6a6e77;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.55;
+  min-height: 100vh;
+}
+.wrap { max-width: 1320px; margin: 0 auto; padding: 28px 28px 80px; }
+
+header {
+  background: var(--bg-card);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 18px 22px;
+  margin-bottom: 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+.title-block { display: flex; align-items: center; gap: 14px; }
+.title-block .indicator {
+  width: 12px;
+  height: 12px;
+  background: var(--yellow);
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--bg-card), 0 0 0 3px var(--yellow);
+}
+.title-block h1 {
+  font-family: var(--display);
+  font-size: 22px;
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+}
+.title-block .sub {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-soft);
+  letter-spacing: 0.06em;
+  margin-top: 2px;
+  text-transform: uppercase;
+}
+.header-actions { display: flex; gap: 8px; }
+.theme-toggle {
+  background: var(--steel);
+  color: var(--bg-card);
+  border: 1px solid var(--steel);
+  padding: 7px 14px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 3px;
+}
+.theme-toggle:hover { background: var(--yellow); border-color: var(--yellow); color: var(--ink); }
+
+.preset-bar {
+  background: var(--bg-card);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 14px 18px;
+  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.preset-bar .label {
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+}
+.preset-btn {
+  background: var(--bg-panel);
+  border: 1px solid var(--rule);
+  color: var(--ink);
+  padding: 7px 14px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  border-radius: 3px;
+}
+.preset-btn:hover { border-color: var(--yellow); }
+.preset-btn.active { background: var(--yellow); border-color: var(--yellow); color: var(--ink); font-weight: 700; }
+
+.grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 22px;
+}
+@media (max-width: 980px) { .grid { grid-template-columns: 1fr; } }
+.panel {
+  background: var(--bg-card);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 20px 22px;
+}
+.panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 0 16px 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--rule-soft);
+}
+.panel-head h2 {
+  font-family: var(--display);
+  font-size: 16px;
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+.panel-head .badge {
+  font-family: var(--mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+  background: var(--bg-deep);
+  padding: 3px 8px;
+  border-radius: 2px;
+}
+
+.bot-row {
+  display: grid;
+  grid-template-columns: 1fr 220px;
+  gap: 12px;
+  align-items: center;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--rule-soft);
+}
+.bot-row:last-child { border-bottom: none; }
+.bot-info { display: flex; flex-direction: column; min-width: 0; }
+.bot-name {
+  font-family: var(--mono);
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--ink);
+}
+.bot-meta {
+  font-size: 11.5px;
+  color: var(--ink-soft);
+  margin-top: 1px;
+}
+.bot-meta .vendor { font-weight: 600; }
+.bot-meta .role { font-style: italic; }
+
+.toggle-group { display: flex; gap: 0; }
+.toggle-btn {
+  background: var(--bg-panel);
+  border: 1px solid var(--rule);
+  color: var(--ink-soft);
+  padding: 7px 12px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 0;
+  flex: 1;
+  font-weight: 600;
+}
+.toggle-btn:first-child { border-radius: 3px 0 0 3px; }
+.toggle-btn:last-child { border-radius: 0 3px 3px 0; }
+.toggle-btn:not(:last-child) { border-right: none; }
+.toggle-btn.active.allow { background: var(--green); border-color: var(--green); color: #fff; }
+.toggle-btn.active.partial { background: var(--yellow); border-color: var(--yellow); color: var(--ink); }
+.toggle-btn.active.block { background: var(--red); border-color: var(--red); color: #fff; }
+
+.url-section {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--rule-soft);
+}
+.field { margin-bottom: 12px; }
+.field label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+  margin-bottom: 5px;
+}
+.field input, .field textarea {
+  width: 100%;
+  font-family: var(--mono);
+  font-size: 13px;
+  padding: 8px 11px;
+  background: var(--bg-panel);
+  border: 1px solid var(--rule);
+  color: var(--ink);
+  border-radius: 3px;
+}
+.field input:focus, .field textarea:focus {
+  outline: none;
+  border-color: var(--yellow);
+}
+.field textarea { resize: vertical; min-height: 70px; }
+.field .hint { font-size: 11px; color: var(--ink-faint); margin-top: 3px; font-style: italic; }
+
+.output-wrap { display: flex; flex-direction: column; gap: 14px; }
+.output {
+  background: var(--bg-deep);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  padding: 16px 18px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 560px;
+  overflow-y: auto;
+  color: var(--ink);
+}
+
+.status-block {
+  background: var(--bg-panel);
+  border: 1px solid var(--rule-soft);
+  border-radius: 3px;
+  padding: 14px 16px;
+}
+.status-block h3 {
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0 0 8px 0;
+  color: var(--ink-soft);
+}
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  font-family: var(--mono);
+  font-size: 12px;
+}
+.status-cell { display: flex; flex-direction: column; gap: 2px; }
+.status-num { font-size: 22px; font-weight: 700; line-height: 1; }
+.status-num.allow { color: var(--green); }
+.status-num.partial { color: var(--yellow); }
+.status-num.block { color: var(--red); }
+.status-label { font-size: 10.5px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.05em; }
+
+.actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn {
+  font-family: var(--mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 10px 18px;
+  border: 1.5px solid var(--ink);
+  background: var(--ink);
+  color: var(--bg-card);
+  cursor: pointer;
+  border-radius: 3px;
+  font-weight: 600;
+}
+.btn:hover { background: var(--yellow); border-color: var(--yellow); color: var(--ink); }
+.btn.secondary { background: transparent; color: var(--ink); }
+.btn.secondary:hover { background: var(--yellow); border-color: var(--yellow); }
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--ink);
+  color: var(--bg-card);
+  padding: 10px 22px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  border-radius: 3px;
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+footer {
+  margin-top: 56px;
+  padding-top: 24px;
+  border-top: 1px solid var(--rule);
+  font-size: 12px;
+  color: var(--ink-soft);
+  font-family: var(--mono);
+}
+footer a { color: var(--yellow); text-decoration: none; font-weight: 600; }
+footer a:hover { text-decoration: underline; }
+[data-theme="dark"] footer a { color: var(--yellow-soft); }
+</style>
+</head>
+<body data-theme="light">
+<div class="wrap">
+  <header>
+    <div class="title-block">
+      <div class="indicator"></div>
+      <div>
+        <h1>robots.txt AI Builder</h1>
+        <div class="sub">CRAWLER ACCESS CONTROL PANEL &middot; 17 named AI bots</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="theme-toggle" id="theme-toggle">Dark mode</button>
+    </div>
+  </header>
+
+  <div class="preset-bar">
+    <span class="label">Presets:</span>
+    <button class="preset-btn" data-preset="allow-all">Allow all AI</button>
+    <button class="preset-btn" data-preset="block-training">Block training, allow search</button>
+    <button class="preset-btn" data-preset="block-all">Block all AI</button>
+    <button class="preset-btn" data-preset="custom">Custom</button>
+  </div>
+
+  <div class="grid">
+    <div class="panel">
+      <div class="panel-head">
+        <h2>AI Crawler Catalog</h2>
+        <span class="badge" id="bot-count">0 / 17 ALLOWED</span>
+      </div>
+      <div id="bot-list"></div>
+
+      <div class="url-section">
+        <div class="field">
+          <label>Sitemap URL</label>
+          <input type="url" id="sitemap-url" placeholder="https://example.com/sitemap.xml">
+        </div>
+        <div class="field">
+          <label>llms.txt URL (optional)</label>
+          <input type="url" id="llms-url" placeholder="https://example.com/llms.txt">
+        </div>
+        <div class="field">
+          <label>Disallow paths (one per line)</label>
+          <textarea id="disallow-paths" placeholder="/admin/&#10;/api/&#10;/cart/&#10;/checkout/"></textarea>
+          <div class="hint">Applies to all bots in the User-agent: * block.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Output</h2>
+        <span class="badge" id="line-count">0 LINES</span>
+      </div>
+
+      <div class="status-block">
+        <h3>Crawler status</h3>
+        <div class="status-grid">
+          <div class="status-cell">
+            <span class="status-num allow" id="count-allow">0</span>
+            <span class="status-label">Allowed</span>
+          </div>
+          <div class="status-cell">
+            <span class="status-num partial" id="count-partial">0</span>
+            <span class="status-label">Partial</span>
+          </div>
+          <div class="status-cell">
+            <span class="status-num block" id="count-block">0</span>
+            <span class="status-label">Blocked</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="output-wrap">
+        <pre class="output" id="output"></pre>
+        <div class="actions">
+          <button class="btn" id="copy-btn">Copy robots.txt</button>
+          <button class="btn secondary" id="download-btn">Download</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Built by <a href="https://github.com/0xelitesystem" target="_blank" rel="noopener">0xelitesystem</a>. Pairs with <a href="https://github.com/0xelitesystem/llms-txt-generator" target="_blank" rel="noopener">llms-txt-generator</a>, <a href="https://github.com/0xelitesystem/schema-markup-generator" target="_blank" rel="noopener">schema-markup-generator</a>, and <a href="https://github.com/0xelitesystem/geo-audit-checklist" target="_blank" rel="noopener">geo-audit-checklist</a>.
+  </footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+
+const $ = (id) => document.getElementById(id);
+
+const BOTS = [
+  { ua: 'GPTBot', vendor: 'OpenAI', role: 'Training data crawler', purpose: 'training', docsUrl: 'platform.openai.com/docs/gptbot' },
+  { ua: 'OAI-SearchBot', vendor: 'OpenAI', role: 'ChatGPT search results', purpose: 'search', docsUrl: 'platform.openai.com/docs/bots' },
+  { ua: 'ChatGPT-User', vendor: 'OpenAI', role: 'On-demand user browsing', purpose: 'browsing', docsUrl: 'platform.openai.com/docs/bots' },
+  { ua: 'ClaudeBot', vendor: 'Anthropic', role: 'Training and search', purpose: 'training', docsUrl: 'support.anthropic.com' },
+  { ua: 'Claude-Web', vendor: 'Anthropic', role: 'On-demand browsing for Claude', purpose: 'browsing', docsUrl: 'support.anthropic.com' },
+  { ua: 'anthropic-ai', vendor: 'Anthropic', role: 'Legacy crawler identifier', purpose: 'training', docsUrl: 'support.anthropic.com' },
+  { ua: 'PerplexityBot', vendor: 'Perplexity', role: 'Indexing for citation engine', purpose: 'search', docsUrl: 'docs.perplexity.ai' },
+  { ua: 'Perplexity-User', vendor: 'Perplexity', role: 'On-demand user browsing', purpose: 'browsing', docsUrl: 'docs.perplexity.ai' },
+  { ua: 'Google-Extended', vendor: 'Google', role: 'Bard/Gemini training opt-out', purpose: 'training', docsUrl: 'developers.google.com/search/docs' },
+  { ua: 'Bingbot', vendor: 'Microsoft', role: 'Bing search and Copilot', purpose: 'search', docsUrl: 'bing.com/webmasters' },
+  { ua: 'Applebot-Extended', vendor: 'Apple', role: 'Apple Intelligence training', purpose: 'training', docsUrl: 'support.apple.com/en-us/119829' },
+  { ua: 'CCBot', vendor: 'Common Crawl', role: 'Open dataset feeding many LLMs', purpose: 'training', docsUrl: 'commoncrawl.org/ccbot' },
+  { ua: 'Meta-ExternalAgent', vendor: 'Meta', role: 'Meta AI training', purpose: 'training', docsUrl: 'developers.facebook.com/docs/sharing/bot' },
+  { ua: 'Bytespider', vendor: 'ByteDance', role: 'TikTok/Doubao training', purpose: 'training', docsUrl: 'bytespider.com' },
+  { ua: 'Amazonbot', vendor: 'Amazon', role: 'Alexa and Amazon AI', purpose: 'training', docsUrl: 'developer.amazon.com/amazonbot' },
+  { ua: 'FacebookBot', vendor: 'Meta', role: 'Facebook AI assistants', purpose: 'training', docsUrl: 'developers.facebook.com/docs/sharing/bot' },
+  { ua: 'DuckAssistBot', vendor: 'DuckDuckGo', role: 'DuckAssist assistant', purpose: 'search', docsUrl: 'duckduckgo.com/duckduckgo-help-pages' }
+];
+
+let state = {};
+let preset = 'allow-all';
+
+function initState() {
+  BOTS.forEach(b => { state[b.ua] = 'allow'; });
+}
+
+function applyPreset(name) {
+  preset = name;
+  if (name === 'allow-all') {
+    BOTS.forEach(b => { state[b.ua] = 'allow'; });
+  } else if (name === 'block-all') {
+    BOTS.forEach(b => { state[b.ua] = 'block'; });
+  } else if (name === 'block-training') {
+    BOTS.forEach(b => { state[b.ua] = b.purpose === 'training' ? 'block' : 'allow'; });
+  }
+  document.querySelectorAll('.preset-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.preset === name);
+  });
+  renderBots();
+  renderOutput();
+}
+
+function renderBots() {
+  const container = $('bot-list');
+  container.innerHTML = '';
+  BOTS.forEach(b => {
+    const row = document.createElement('div');
+    row.className = 'bot-row';
+    const cur = state[b.ua] || 'allow';
+    row.innerHTML = `
+      <div class="bot-info">
+        <span class="bot-name">${b.ua}</span>
+        <span class="bot-meta"><span class="vendor">${b.vendor}</span> &middot; <span class="role">${b.role}</span></span>
+      </div>
+      <div class="toggle-group">
+        <button class="toggle-btn allow ${cur === 'allow' ? 'active' : ''}" data-ua="${b.ua}" data-state="allow">Allow</button>
+        <button class="toggle-btn partial ${cur === 'partial' ? 'active' : ''}" data-ua="${b.ua}" data-state="partial">Partial</button>
+        <button class="toggle-btn block ${cur === 'block' ? 'active' : ''}" data-ua="${b.ua}" data-state="block">Block</button>
+      </div>
+    `;
+    container.appendChild(row);
+  });
+}
+
+document.addEventListener('click', (e) => {
+  if (e.target.classList.contains('toggle-btn')) {
+    const ua = e.target.dataset.ua;
+    const newState = e.target.dataset.state;
+    state[ua] = newState;
+    preset = 'custom';
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.preset === 'custom');
+    });
+    renderBots();
+    renderOutput();
+  }
+});
+
+function buildRobotsTxt() {
+  const lines = [];
+  const sitemap = $('sitemap-url').value.trim();
+  const llms = $('llms-url').value.trim();
+  const disallowPaths = ($('disallow-paths').value || '')
+    .split('\n')
+    .map(s => s.trim())
+    .filter(Boolean);
+
+  lines.push('# robots.txt');
+  lines.push('# Generated with robots-txt-ai-builder');
+  lines.push('# https://github.com/0xelitesystem/robots-txt-ai-builder');
+  lines.push('');
+
+  // Default block
+  lines.push('User-agent: *');
+  lines.push('Allow: /');
+  if (disallowPaths.length === 0) {
+    lines.push('Disallow: /admin/');
+    lines.push('Disallow: /api/');
+    lines.push('Disallow: /cart/');
+    lines.push('Disallow: /checkout/');
+  } else {
+    disallowPaths.forEach(p => lines.push(`Disallow: ${p.startsWith('/') ? p : '/' + p}`));
+  }
+  lines.push('');
+
+  BOTS.forEach(b => {
+    const s = state[b.ua];
+    lines.push(`# ${b.vendor}: ${b.role}`);
+    lines.push(`User-agent: ${b.ua}`);
+    if (s === 'allow') {
+      lines.push('Allow: /');
+    } else if (s === 'block') {
+      lines.push('Disallow: /');
+    } else if (s === 'partial') {
+      lines.push('Allow: /');
+      if (disallowPaths.length === 0) {
+        lines.push('Disallow: /private/');
+        lines.push('Disallow: /draft/');
+      } else {
+        disallowPaths.forEach(p => lines.push(`Disallow: ${p.startsWith('/') ? p : '/' + p}`));
+      }
+    }
+    lines.push('');
+  });
+
+  if (sitemap) lines.push(`Sitemap: ${sitemap}`);
+  if (llms) lines.push(`Sitemap: ${llms}`);
+
+  return lines.join('\n');
+}
+
+function renderOutput() {
+  const out = buildRobotsTxt();
+  $('output').textContent = out;
+  $('line-count').textContent = out.split('\n').length + ' LINES';
+
+  let a = 0, p = 0, b = 0;
+  Object.values(state).forEach(v => {
+    if (v === 'allow') a++;
+    else if (v === 'partial') p++;
+    else b++;
+  });
+  $('count-allow').textContent = a;
+  $('count-partial').textContent = p;
+  $('count-block').textContent = b;
+  $('bot-count').textContent = `${a + p} / ${BOTS.length} ALLOWED`;
+}
+
+document.addEventListener('input', (e) => {
+  if (['sitemap-url', 'llms-url', 'disallow-paths'].includes(e.target.id)) renderOutput();
+});
+
+document.querySelectorAll('.preset-btn').forEach(btn => {
+  btn.addEventListener('click', () => applyPreset(btn.dataset.preset));
+});
+
+$('copy-btn').addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText(buildRobotsTxt());
+    showToast('Copied robots.txt');
+  } catch (err) {
+    showToast('Copy failed');
+  }
+});
+
+$('download-btn').addEventListener('click', () => {
+  const txt = buildRobotsTxt();
+  const blob = new Blob([txt], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'robots.txt';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('Downloaded robots.txt');
+});
+
+function showToast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+$('theme-toggle').addEventListener('click', () => {
+  const cur = document.body.dataset.theme;
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.body.dataset.theme = next;
+  $('theme-toggle').textContent = next === 'dark' ? 'Light mode' : 'Dark mode';
+});
+
+if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+  document.body.dataset.theme = 'dark';
+  $('theme-toggle').textContent = 'Light mode';
+}
+
+initState();
+applyPreset('allow-all');
+</script>
+</body>
+</html>
