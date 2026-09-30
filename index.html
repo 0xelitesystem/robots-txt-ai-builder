@@ -41,7 +41,7 @@
   --bg-deep: #1a1d22;
   --ink: #e0e2e4;
   --ink-soft: #a0a4aa;
-  --ink-faint: #6a6e74;
+  --ink-faint: #898c90;
   --rule: #3a3d44;
   --rule-soft: #2e3138;
   --yellow: #e8b833;
@@ -100,7 +100,7 @@ header {
 .header-actions { display: flex; gap: 8px; }
 .theme-toggle {
   background: var(--steel);
-  color: var(--bg-card);
+  color: #ffffff;
   border: 1px solid var(--steel);
   padding: 7px 14px;
   font-family: var(--mono);
@@ -110,7 +110,7 @@ header {
   cursor: pointer;
   border-radius: 3px;
 }
-.theme-toggle:hover { background: var(--yellow); border-color: var(--yellow); color: var(--ink); }
+.theme-toggle:hover { background: var(--yellow); border-color: var(--yellow); color: #0a0a0a; }
 
 .preset-bar {
   background: var(--bg-card);
@@ -142,7 +142,7 @@ header {
   border-radius: 3px;
 }
 .preset-btn:hover { border-color: var(--yellow); }
-.preset-btn.active { background: var(--yellow); border-color: var(--yellow); color: var(--ink); font-weight: 700; }
+.preset-btn.active { background: var(--yellow); border-color: var(--yellow); color: #0a0a0a; font-weight: 700; }
 
 .grid {
   display: grid;
@@ -225,8 +225,9 @@ header {
 .toggle-btn:last-child { border-radius: 0 3px 3px 0; }
 .toggle-btn:not(:last-child) { border-right: none; }
 .toggle-btn.active.allow { background: var(--green); border-color: var(--green); color: #fff; }
-.toggle-btn.active.partial { background: var(--yellow); border-color: var(--yellow); color: var(--ink); }
+.toggle-btn.active.partial { background: var(--yellow); border-color: var(--yellow); color: #0a0a0a; }
 .toggle-btn.active.block { background: var(--red); border-color: var(--red); color: #fff; }
+[data-theme="dark"] .toggle-btn.active.allow, [data-theme="dark"] .toggle-btn.active.block { color: #0a0a0a; }
 
 .url-section {
   margin-top: 18px;
@@ -318,9 +319,9 @@ header {
   border-radius: 3px;
   font-weight: 600;
 }
-.btn:hover { background: var(--yellow); border-color: var(--yellow); color: var(--ink); }
+.btn:hover { background: var(--yellow); border-color: var(--yellow); color: #0a0a0a; }
 .btn.secondary { background: transparent; color: var(--ink); }
-.btn.secondary:hover { background: var(--yellow); border-color: var(--yellow); }
+.btn.secondary:hover { background: var(--yellow); border-color: var(--yellow); color: #0a0a0a; }
 
 .toast {
   position: fixed;
@@ -351,6 +352,8 @@ footer {
 footer a { color: var(--yellow); text-decoration: none; font-weight: 600; }
 footer a:hover { text-decoration: underline; }
 [data-theme="dark"] footer a { color: var(--yellow-soft); }
+/* A theme saved by another tool on the shared origin can set <html data-theme="light"> while <body> is light too; the footer links then sit on #e8ebef (WCAG 1.4.3). */
+:root[data-theme="light"] body[data-theme="light"] footer a { color: #84640e; }
 </style>
 <link rel="canonical" href="https://0xelitesystem.github.io/robots-txt-ai-builder/">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"robots.txt AI Builder","applicationCategory":"DeveloperApplication","operatingSystem":"Any (browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"url":"https://0xelitesystem.github.io/robots-txt-ai-builder/","author":{"@type":"Person","name":"0xelitesystem","url":"https://elitesystem.ai"}}</script>
@@ -361,7 +364,7 @@ footer a:hover { text-decoration: underline; }
   --bg-card: #111110;
   --bg-deep: #050505;
   --ink: #e8e8e3;
-  --ink-faint: #6e6e68;
+  --ink-faint: #898983;
   --ink-soft: #a8a8a3;
   --rule: #1f1f1d;
   --rule-soft: #1f1f1d;
@@ -371,7 +374,7 @@ footer a:hover { text-decoration: underline; }
   --bg-card: #dee2e8;
   --bg-deep: #f4f5f8;
   --ink: #0a0a0a;
-  --ink-faint: #6e6e68;
+  --ink-faint: #5c5c56;
   --ink-soft: #2a2a27;
   --rule: #c8cdd5;
   --rule-soft: #c8cdd5;
@@ -453,7 +456,7 @@ footer a:hover { text-decoration: underline; }
       </div>
 
       <div class="output-wrap">
-        <pre class="output" id="output"></pre>
+        <pre class="output" id="output" tabindex="0" role="region" aria-label="Generated robots.txt"></pre>
         <div class="actions">
           <button class="btn" id="copy-btn">Copy robots.txt</button>
           <button class="btn secondary" id="download-btn">Download</button>
@@ -681,11 +684,8 @@ applyPreset('allow-all');
 (function () {
   var KEY = "theme";
   var btn = document.querySelector("#theme-toggle, #theme-btn, .theme-btn, .theme-toggle, [data-theme-toggle]");
-  function host() {
-    if (document.documentElement.hasAttribute("data-theme")) { return document.documentElement; }
-    if (document.body && document.body.hasAttribute("data-theme")) { return document.body; }
-    return document.documentElement;
-  }
+  // This page's own toggle switches <body> while <html> keeps a fixed brand theme, so remember <body>.
+  function host() { return document.body || document.documentElement; }
   function current() { return host().getAttribute("data-theme") || ""; }
   function setter() {
     if (typeof setTheme === "function") { return setTheme; }
