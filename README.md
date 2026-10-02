@@ -39,7 +39,7 @@ Toggle Allow, Partial, or Block per AI crawler. Set sitemap URL, llms.txt URL, a
 - **Block all AI**: blocks every cataloged AI bot. Use for paywalled or proprietary content.
 - **Custom**: pick per-bot.
 
-## Use it
+## Use
 
 Open `index.html` in any browser. Or visit `https://0xelitesystem.github.io/robots-txt-ai-builder/`.
 
@@ -48,6 +48,10 @@ Open `index.html` in any browser. Or visit `https://0xelitesystem.github.io/robo
 3. Add any global disallow paths (admin, cart, checkout, etc).
 4. Copy or download the robots.txt.
 5. Upload to your web root so it serves at `https://yoursite.com/robots.txt`.
+
+## Why this exists
+
+Deciding which AI crawlers may read your site means knowing each bot's user-agent name and writing a block for it. This builder lists the bots and writes the rules from a set of toggles. It is one HTML file with no tracking and no network calls. MIT licensed.
 
 ## What "Partial" means
 
@@ -70,6 +74,23 @@ Allows the bot but applies your disallow paths to it specifically. Useful when y
 - [llms-txt-generator](https://github.com/0xelitesystem/llms-txt-generator): create the llms.txt this robots.txt can advertise
 - [schema-markup-generator](https://github.com/0xelitesystem/schema-markup-generator): structured data layer that AI engines read
 - [geo-audit-checklist](https://github.com/0xelitesystem/geo-audit-checklist): the full checklist this tool sits inside
+
+## Privacy
+
+Everything runs in your browser. No network requests, no analytics, no third-party scripts. The toggles, URLs and paths you enter are not saved, so a refresh clears them. If you click the theme toggle, your light or dark choice is saved in your browser's localStorage under the key `theme`. Nothing else is stored.
+
+## Run locally
+
+```bash
+git clone https://github.com/0xelitesystem/robots-txt-ai-builder
+cd robots-txt-ai-builder
+```
+
+Open `index.html` in any browser. Or serve the folder with `python -m http.server 8000` and visit http://localhost:8000/.
+
+## Build
+
+No build step. The whole tool is one `index.html` file with its CSS and JavaScript inline.
 
 ## More
 
