@@ -71,7 +71,7 @@ Allows the bot but applies your disallow paths to it specifically. Useful when y
 
 ## Pairs with
 
-- [llms-txt-generator](https://github.com/0xelitesystem/llms-txt-generator): create the llms.txt this robots.txt can advertise
+- [llms-txt-file-builder](https://github.com/0xelitesystem/llms-txt-file-builder): create the llms.txt this robots.txt can advertise
 - [schema-markup-generator](https://github.com/0xelitesystem/schema-markup-generator): structured data layer that AI engines read
 - [geo-audit-checklist](https://github.com/0xelitesystem/geo-audit-checklist): the full checklist this tool sits inside
 
